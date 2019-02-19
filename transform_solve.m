@@ -27,6 +27,6 @@ end
 % Singular value decomposition
 [U,~,V] = svd(col_mat);
 r_mat = V*U';
-t_mat = pc_b - pc_a*r_mat;
+t_mat = pc_b - r_mat*pc_a;
 
 return
