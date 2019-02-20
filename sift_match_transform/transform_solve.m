@@ -18,7 +18,7 @@ ct_b = pc_b - dim_mean_b;
 
 % Calculate correlation matrix
 [dim_pc,num_pc] = size(pc_a);
-col_mat = zeros(dim_pc, num_pc);
+col_mat = zeros(dim_pc, dim_pc);
 for i = 1:1:num_pc
     tmp_mat = ct_a(:,i)*ct_b(:,i)';
     col_mat = col_mat+tmp_mat;

@@ -1,4 +1,4 @@
-function imag2d(rgb)
+function new_rgb = imag2d(rgb)
     new_rgb =[];
     color_pc = rgb;
 
@@ -12,6 +12,4 @@ function imag2d(rgb)
     rec_g = reshape(g, [640, 480]);
     rec_b = reshape(b, [640, 480]);
     new_rgb = cat(3, rec_r', rec_g', rec_b');
-    imshow(new_rgb)
-    pause(0.1)
 end
