@@ -48,10 +48,13 @@ transformed_pcs = cell(1,40);
 
 for frame = 40:-1:1
     pc = pcs{frame};
+    mask = masks{frame};
     
     color_pc = pc.Color;
+    color_pc(mask,:) = [];
     
     xyz_pc = pc.Location;
+    xyz_pc(mask,:) = [];
     xyz_pc = cat(2, xyz_pc, ones(size(xyz_pc, 1), 1));
     xyz_pc = xyz_pc';
     
@@ -74,7 +77,17 @@ save('new_office.mat', 'transformed_pcs');
 new_office = load('new_office.mat');
 transformed_pcs = new_office.transformed_pcs;
 
-merged_pc = transformed_pcs{1};
-for frame = 2:40
-    merged_pc = pcmerge(merged_pc, transformed_pcs{frame}, 1);
+%{
+pc_merged = transformed_pcs{1};
+for frame = 2:15
+    pc_merged = pcmerge(pc_merged, transformed_pcs{frame}, 1);
 end
+%}
+
+xyz_merged = [];
+color_merged = [];
+for frame = 1:10
+    xyz_merged = cat(1, xyz_merged, transformed_pcs{frame}.Location);
+    color_merged = cat(1, color_merged, transformed_pcs{frame}.Color);
+end
+pc_merged = pointCloud(xyz_merged, 'Color', color_merged);
