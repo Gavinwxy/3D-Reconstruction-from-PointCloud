@@ -37,6 +37,7 @@ for i=1:1:itr_num
     pc_A = pointCloud(A(:,sample_idx)');
     pc_B = pointCloud(B(:,sample_idx)');
     F = pcregistericp(pc_B,pc_A,'Extrapolate',true);
+    F = F.T;
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     dist = dist_cal(F*A_homo, B_homo);
     inl_idx = find(dist<th_dist);

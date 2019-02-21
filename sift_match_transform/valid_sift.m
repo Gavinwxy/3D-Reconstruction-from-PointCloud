@@ -15,8 +15,8 @@ pt_num1 = size(d1, 2);
 pt_num2 = size(d2, 2);
 
 % Filtered by mask
-loc1 = round(f1(1:2,:));
-loc2 = round(f2(1:2,:));
+loc1 = floor(f1(1:2,:));
+loc2 = floor(f2(1:2,:));
 
 val_loc1 = [];
 val_loc2 = [];
@@ -33,9 +33,24 @@ for i=1:1:pt_num1
     [h, w] = size(patch);
     ratio = sum(patch, 'all') / (h * w);
     
-    if (mask1(loc(1), loc(2)) == 1) && (ratio >= ratio_th)
-        val_loc1 = [val_loc1, loc1(:,i)];
-        val_d1 = [val_d1, d1(:,i)];
+    if ratio >= ratio_th
+        if mask1(loc(1), loc(2)) == 1
+            val_loc1 = [val_loc1, loc];
+            val_d1 = [val_d1, d1(:,i)];
+        elseif mask1(loc(1)+1, loc(2)) == 1
+            loc(1) = loc(1) + 1;
+            val_loc1 = [val_loc1, loc];
+            val_d1 = [val_d1, d1(:,i)];
+        elseif mask1(loc(1), loc(2)+1) == 1
+            loc(2) = loc(2) + 1;
+            val_loc1 = [val_loc1, loc];
+            val_d1 = [val_d1, d1(:,i)];
+        elseif mask1(loc(1)+1, loc(2)+1) == 1
+            loc(1) = loc(1) + 1;
+            loc(2) = loc(2) + 1;
+            val_loc1 = [val_loc1, loc];
+            val_d1 = [val_d1, d1(:,i)];
+        end
     end
 end
 
@@ -48,9 +63,24 @@ for i=1:1:pt_num2
     patch = mask2(x_min:x_max, y_min:y_max);
     ratio = sum(patch, 'all') / ratio_th;
     
-    if (mask2(loc(1), loc(2)) == 1) && (ratio >= ratio_th)
-        val_loc2 = [val_loc2, loc2(:,i)];
-        val_d2 = [val_d2, d2(:,i)];
+    if ratio >= ratio_th
+        if mask2(loc(1), loc(2)) == 1
+            val_loc2 = [val_loc2, loc];
+            val_d2 = [val_d2, d2(:,i)];
+        elseif mask2(loc(1)+1, loc(2)) == 1
+            loc(1) = loc(1) + 1;
+            val_loc2 = [val_loc2, loc];
+            val_d2 = [val_d2, d2(:,i)];
+        elseif mask2(loc(1), loc(2)+1) == 1
+            loc(2) = loc(2) + 1;
+            val_loc2 = [val_loc2, loc];
+            val_d2 = [val_d2, d2(:,i)];
+        elseif mask2(loc(1)+1, loc(2)+1) == 1
+            loc(1) = loc(1) + 1;
+            loc(2) = loc(2) + 1;
+            val_loc2 = [val_loc2, loc];
+            val_d2 = [val_d2, d2(:,i)];
+        end
     end
 end
 
