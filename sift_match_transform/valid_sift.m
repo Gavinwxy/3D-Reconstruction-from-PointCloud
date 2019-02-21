@@ -52,8 +52,8 @@ for i=1:1:num_val_sift1
             % Convert pixel location to depth coord
             %idx1 = val_loc1(1,i)+(val_loc1(2,i)-1)*640;
             %idx2 = val_loc2(1,j)+(val_loc2(2,j)-1)*640;
-            idx1 = idx_convert_2d_to_1d(val_loc1(:,i)');
-            idx2 = idx_convert_2d_to_1d(val_loc2(:,j)');
+            idx1 = idx_convert_2d_to_1d(val_loc1(:,i));
+            idx2 = idx_convert_2d_to_1d(val_loc2(:,j));
             sift_pairs = [sift_pairs; idx1,idx2];
         end
     end
