@@ -28,9 +28,7 @@ end
 
 [U,~,V] = svd(col_mat);
 R = V*U';
-ct_a = mean(pc_a, 2);
-ct_b = mean(pc_b, 2);
-T = ct_b - R*ct_a;
+T = dim_mean_b - R*dim_mean_a;
 zero_mat = zeros(1, size(R, 2));
 final_trans = [R, T; zero_mat, 1];
 return

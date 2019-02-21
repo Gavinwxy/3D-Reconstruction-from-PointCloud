@@ -1,4 +1,4 @@
-function sift_pairs = valid_sift(img1, mask1, img2, mask2, dist_th)
+function sift_pairs = valid_sift(img1, mask1, img2, mask2, dist_th, ratio_th)
 % This function is to filter and then find valid sift matches 
 % Args:
 %   img1, img2: RGB images
@@ -25,7 +25,15 @@ val_d2 = [];
 
 for i=1:1:pt_num1
     loc = loc1(:,i);
-    if mask1(loc(1), loc(2)) == 1
+    x_min = max(loc(1)-8, 1);
+    x_max = min(loc(1)+8, 640);
+    y_min = max(loc(2)-8, 1);
+    y_max = min(loc(2)+8, 480);
+    patch = mask1(x_min:x_max, y_min:y_max);
+    [h, w] = size(patch);
+    ratio = sum(patch, 'all') / (h * w);
+    
+    if (mask1(loc(1), loc(2)) == 1) && (ratio >= ratio_th)
         val_loc1 = [val_loc1, loc1(:,i)];
         val_d1 = [val_d1, d1(:,i)];
     end
@@ -33,7 +41,14 @@ end
 
 for i=1:1:pt_num2
     loc = loc2(:,i);
-    if mask2(loc(1), loc(2)) == 1
+    x_min = max(loc(1)-8, 1);
+    x_max = min(loc(1)+8, 640);
+    y_min = max(loc(2)-8, 1);
+    y_max = min(loc(2)+8, 480);
+    patch = mask2(x_min:x_max, y_min:y_max);
+    ratio = sum(patch, 'all') / ratio_th;
+    
+    if (mask2(loc(1), loc(2)) == 1) && (ratio >= ratio_th)
         val_loc2 = [val_loc2, loc2(:,i)];
         val_d2 = [val_d2, d2(:,i)];
     end
@@ -50,8 +65,6 @@ for i=1:1:num_val_sift1
         dist = dist_cal(val_d1(:,i), val_d2(:,j));
         if dist < dist_th
             % Convert pixel location to depth coord
-            %idx1 = val_loc1(1,i)+(val_loc1(2,i)-1)*640;
-            %idx2 = val_loc2(1,j)+(val_loc2(2,j)-1)*640;
             idx1 = idx_convert_2d_to_1d(val_loc1(:,i));
             idx2 = idx_convert_2d_to_1d(val_loc2(:,j));
             sift_pairs = [sift_pairs; idx1,idx2];
