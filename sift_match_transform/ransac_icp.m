@@ -29,7 +29,7 @@ end
 
 inl_th = round(match_num*inl_ratio);
 models = cell(1, itr_num);
-inl_num = zeros(1, itr_num);
+squared_errors = Inf(1, itr_num);
 
 for i=1:1:itr_num
     sample_idx = rand_idx(match_num, sample_size); % return random index
@@ -40,16 +40,16 @@ for i=1:1:itr_num
     F = F.T;
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     dist = dist_cal(F*A_homo, B_homo);
-    inl_idx = find(dist<th_dist);
-    inl_num(i) = length(inl_idx);
-    if length(inl_idx)<inl_th
+    inl_num = length(find(dist<th_dist));
+    if inl_num < inl_th
         continue;
     end
+    squared_errors(i) = sum(dist.^2);
     models{i} = F;
 end
 
-[num, idx] = max(inl_num);
-if num < inl_th
+[err, idx] = min(squared_errors);
+if err == Inf
     fprintf('Mo model meets success criteria !\n')
     return
 end

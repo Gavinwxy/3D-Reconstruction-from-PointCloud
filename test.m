@@ -18,10 +18,10 @@ rgb_img2 = imag2d(pc2.Color);
 % Hyper parameters
 sift_dist_th = 50;
 ratio_th = 0.8;
-ransac_param.sample_size = 10; % number of sample points to use
+ransac_param.sample_size = 25; % number of sample points to use
 ransac_param.th_dist = 1.5; % distance threshold
 ransac_param.itr_num = 100; % number of iteration
-ransac_param.inl_ratio = 0.7;% inlier ratio
+ransac_param.inl_ratio = 0.5;% inlier ratio
 
 sift_pairs = valid_sift(rgb_img1, mask1, rgb_img2, mask2, sift_dist_th, ratio_th);
 [A, B] = get_depth(pc1, pc2, sift_pairs);
