@@ -65,7 +65,7 @@ for i=1:1:itr_num
     
     dist = dist_cal(F*A_homo, B_homo);
     inl_num = length(find(dist<th_dist));
-    if inl_num < best_inl_num
+    if inl_num <= best_inl_num
         continue;
     end
     best_inl_num = inl_num;
