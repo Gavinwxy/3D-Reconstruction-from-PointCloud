@@ -68,6 +68,7 @@ for i=1:1:itr_num
     if inl_num < best_inl_num
         continue;
     end
+    best_inl_num = inl_num;
     best_model = F;
 end
 
