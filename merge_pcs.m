@@ -6,10 +6,11 @@ pcs = pcs.pcl_train;
 mask_collection = load('mask_collection.mat');
 masks = mask_collection.masks;
 
-models = cell(1,39);
+min_frame = 1;
+max_frame = 2;
+models = cell(1,max_frame-1);
 
-
-for frame = 40:-1:2
+for frame = max_frame:-1:(min_frame+1)
     frame1 = frame;
     frame2 = frame-1;
     
@@ -23,13 +24,13 @@ for frame = 40:-1:2
     rgb_img2 = imag2d(pc2.Color);
     
     % Hyper parameters
-    sift_dist_th = 10; % the less the stricter
+    sift_dist_th = 50; % the less the stricter
     area_ratio_th = 0.9; % the more the stricter
-    best_2nd_ratio = 0.7; % the less the stricter
+    best_2nd_ratio = 0.5; % the less the stricter
     ransac_param.sample_size = 20; % the more the stricter
     ransac_param.th_dist = 1; % the less the stricter
     ransac_param.itr_num = 100; % number of iteration
-    ransac_param.inl_ratio = 0.4;% the more the stricter
+    ransac_param.inl_ratio = 0.5;% the more the stricter
 
     sift_pairs = valid_sift(rgb_img1, mask1, rgb_img2, mask2, sift_dist_th, area_ratio_th, best_2nd_ratio);
     [A, B] = get_depth(pc1, pc2, sift_pairs);
@@ -44,10 +45,10 @@ save('model_collection.mat', 'models');
 model_collection = load('model_collection.mat');
 models = model_collection.models;
 
-transformed_pcs = cell(1,40);
+transformed_pcs = cell(1,max_frame);
 
 
-for frame = 40:-1:1
+for frame = max_frame:-1:min_frame
     pc = pcs{frame};
     mask = masks{frame};
     
@@ -60,7 +61,7 @@ for frame = 40:-1:1
     xyz_pc = xyz_pc';
     
     model_idx = frame - 1;
-    while model_idx > 0
+    while model_idx >= min_frame
         model = models{model_idx};
         xyz_pc = model*xyz_pc;
         model_idx = model_idx - 1;
@@ -78,8 +79,8 @@ save('new_office.mat', 'transformed_pcs');
 new_office = load('new_office.mat');
 transformed_pcs = new_office.transformed_pcs;
 
-pc_merged = transformed_pcs{1};
-for frame = 2:2
+pc_merged = transformed_pcs{min_frame};
+for frame = (min_frame+1):max_frame
     pc_merged = pcmerge(pc_merged, transformed_pcs{frame}, 0.015);
 end
 

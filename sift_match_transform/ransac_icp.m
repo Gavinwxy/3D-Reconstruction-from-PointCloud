@@ -1,6 +1,6 @@
 function [best_model, pt_idx] = ransac_icp(A, B, ransac_param)
 % Args:
-%   A, B: Point set A and B each with size m x n. m points with n
+%   A, B: Point set A and B each with size n x m. m points with n
 %         dimensions. [x, y, z]' for example.
 %   ransac_param: Parameter setting for ransac algorithm 
 % Returns:
@@ -32,6 +32,7 @@ best_inl_num = inl_th;
 best_model = [];
 
 for i=1:1:itr_num
+    %{
     indexes = [1:match_num];
     
     idx = randsample(indexes, 1);
@@ -55,7 +56,10 @@ for i=1:1:itr_num
             sample_B = [sample_B, b];
         end
     end
-    
+    %}
+    idx = rand_idx(match_num, sample_size);
+    sample_A = A(:,idx);
+    sample_B = B(:,idx);
     %%%%%%%%%%%%%%%%%% ICP %%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     pc_A = pointCloud(sample_A');
     pc_B = pointCloud(sample_B');

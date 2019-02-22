@@ -93,7 +93,8 @@ distances = [];
 
 for i=1:1:num_val_sift1
     for j=1:1:num_val_sift2
-        dist = dist_chi_sq(val_d1(:,i), val_d2(:,j));
+        dist = dist_cal(val_d1(:,i), val_d2(:,j));
+        %dist = dist_chi_sq(val_d1(:,i), val_d2(:,j));
         if dist < dist_th
             % Convert pixel location to depth coord
             idx1 = idx_convert_2d_to_1d(val_loc1(:,i));
@@ -107,13 +108,4 @@ end
 sift_pairs = clean_pairs(sift_pairs, distances, best_2nd_ratio);
 sift_pairs = sift_pairs';
 
-%{
-sift_pairs = second_best_check(sift_pairs, distances', 1.5);
-
-left_sift_pairs = sift_pairs(1,:);
-right_sift_pairs = sift_pairs(2,:);
-sift_pairs = [right_sift_pairs; left_sift_pairs];
-
-sift_pairs = second_best_check(sift_pairs, distances', 1.5);
-%}
 return

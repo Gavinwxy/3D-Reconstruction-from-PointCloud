@@ -12,6 +12,9 @@ sift_idx = [];
 for i=1:1:num_idx
     target_idx = idx_no_rep_left(i);
     target_loc = find(idx_left==target_idx);
+    if length(target_loc)<2
+        continue;
+    end
     left = idx_left(target_loc);
     right = idx_right(target_loc);
     dist_target = dist_collection(target_loc);
@@ -29,19 +32,22 @@ for i=1:1:num_idx
 end
 
 idx_no_rep_right = unique(right_idx_temp, 'stable');
-
-for i=1:1:num_idx
+num_idx_right = length(idx_no_rep_right);
+for i=1:1:num_idx_right
     target_idx = idx_no_rep_right(i);
-    target_loc = find(right_idx_temp==target_idx);
+    target_loc = find(right_idx_temp==target_idx);   
+    if length(target_loc)<2
+        continue;
+    end
     left = left_idx_temp(target_loc);
     right = right_idx_temp(target_loc);
     dist_target = dist_temp(target_loc);
     [dist_sort, sort_idx] = sort(dist_target);
-    left = left_idx_temp(sort_idx);
-    right = right_idx_temp(sort_idx);
+    left = left(sort_idx);
+    right = right(sort_idx);
     ratio = dist_sort(1)/dist_sort(2);
     if ratio < ratio_th
-        sift_idx = [sift_idx; left_idx_temp(1) right_idx_temp(1)];
+        sift_idx = [sift_idx; left(1) right(1)];
     else
         continue;
     end
