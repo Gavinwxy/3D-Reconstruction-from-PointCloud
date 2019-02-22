@@ -89,18 +89,22 @@ num_val_sift2 = size(val_loc2, 2);
 
 % Find matched pair
 sift_pairs = [];
+distances = [];
 
 for i=1:1:num_val_sift1
     for j=1:1:num_val_sift2
-        dist = dist_cal(val_d1(:,i), val_d2(:,j));
+        dist = dist_chi_sq(val_d1(:,i), val_d2(:,j));
         if dist < dist_th
             % Convert pixel location to depth coord
             idx1 = idx_convert_2d_to_1d(val_loc1(:,i));
             idx2 = idx_convert_2d_to_1d(val_loc2(:,j));
             sift_pairs = [sift_pairs; idx1,idx2];
+            distances = [distances; dist];
         end
     end
 end
+
+sift_pairs = clean_pairs(sift_pairs, distances);
+
 sift_pairs = sift_pairs';
 return
-
