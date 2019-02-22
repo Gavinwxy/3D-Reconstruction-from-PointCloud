@@ -33,12 +33,33 @@ squared_errors = Inf(1, itr_num);
 
 for i=1:1:itr_num
     sample_idx = rand_idx(match_num, sample_size); % return random index
+    sample_A = A(:,sample_idx);
+    sample_B = B(:,sample_idx);
+    
+    remove_idx = [];
+    visited_ax = [];
+    
+    sample_Ax = sample_A(1,:);
+    for i = 1:sample_size
+        ax = sample_Ax(i);
+        idx = find(sample_Ax==ax);
+        if (ismember(ax, visited_ax) == 0) && (length(idx) > 1)
+            idx = idx(2:end);
+            remove_idx = [remove_idx, idx];
+            visited_ax = [visited_ax, ax];
+        end
+    end
+    
+    sample_A(:, remove_idx) = [];
+    sample_B(:, remove_idx) = [];
+    
     %%%%%%%%%%%%%%%%%% ICP %%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-    pc_A = pointCloud(A(:,sample_idx)');
-    pc_B = pointCloud(B(:,sample_idx)');
+    pc_A = pointCloud(sample_A');
+    pc_B = pointCloud(sample_B');
     F = pcregistericp(pc_B,pc_A,'Extrapolate',true);
     F = F.T;
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+    
     dist = dist_cal(F*A_homo, B_homo);
     inl_num = length(find(dist<th_dist));
     if inl_num < inl_th

@@ -24,9 +24,9 @@ for frame = 40:-1:2
     
     % Hyper parameters
     sift_dist_th = 50;
-    ratio_th = 0.5;
-    ransac_param.sample_size = 20; % number of sample points to use
-    ransac_param.th_dist = 1.7; % distance threshold
+    ratio_th = 0.9;
+    ransac_param.sample_size = 25; % number of sample points to use
+    ransac_param.th_dist = 1.8; % distance threshold
     ransac_param.itr_num = 100; % number of iteration
     ransac_param.inl_ratio = 0.5;% inlier ratio
 
@@ -77,17 +77,14 @@ save('new_office.mat', 'transformed_pcs');
 new_office = load('new_office.mat');
 transformed_pcs = new_office.transformed_pcs;
 
-%{
-pc_merged = transformed_pcs{1};
-for frame = 2:15
-    pc_merged = pcmerge(pc_merged, transformed_pcs{frame}, 1);
+pc_merged = transformed_pcs{5};
+for frame = 6:6
+    pc_merged = pcmerge(pc_merged, transformed_pcs{frame}, 0.015);
 end
-%}
 
-xyz_merged = [];
-color_merged = [];
-for frame = 1:10
-    xyz_merged = cat(1, xyz_merged, transformed_pcs{frame}.Location);
-    color_merged = cat(1, color_merged, transformed_pcs{frame}.Color);
-end
-pc_merged = pointCloud(xyz_merged, 'Color', color_merged);
+xyz_pc = pc_merged.Location;
+color_pc = pc_merged.Color;
+z_pc = xyz_pc(:,3);
+idx = find(z_pc>4);
+xyz_pc(idx,:) = 0;
+pc_merged = pointCloud(xyz_pc, 'Color', color_pc);
