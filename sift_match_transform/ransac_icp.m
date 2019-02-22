@@ -23,7 +23,7 @@ A_homo = [A; ones(1, match_num)];
 B_homo = [B; ones(1, match_num)];
 
 if match_num < sample_size
-    fprintf('Total pairs not enough !\n')
+    fprintf('Total pairs not enough in the first place !\n')
     return
 end
 
@@ -32,26 +32,29 @@ models = cell(1, itr_num);
 squared_errors = Inf(1, itr_num);
 
 for i=1:1:itr_num
-    sample_idx = rand_idx(match_num, sample_size); % return random index
-    sample_A = A(:,sample_idx);
-    sample_B = B(:,sample_idx);
+    indexes = [1:match_num];
     
-    remove_idx = [];
-    visited_ax = [];
+    idx = randsample(indexes, 1);
+    indexes(find(indexes==idx)) = [];
     
-    sample_Ax = sample_A(1,:);
-    for i = 1:sample_size
-        ax = sample_Ax(i);
-        idx = find(sample_Ax==ax);
-        if (ismember(ax, visited_ax) == 0) && (length(idx) > 1)
-            idx = idx(2:end);
-            remove_idx = [remove_idx, idx];
-            visited_ax = [visited_ax, ax];
+    sample_A = A(:,idx);
+    sample_B = B(:,idx);
+    while size(sample_A, 2) < sample_size
+        if size(indexes, 2) == 0
+            fprintf('Total pairs not enough after removing repetitive pairs !\n')
+            return
+        end
+        idx = randsample(indexes, 1);
+        indexes(find(indexes==idx)) = [];
+        
+        a = A(:,idx);
+        b = B(:,idx);
+        sample_Ax = sample_A(1,:);
+        if ismember(a(1), sample_Ax) == 0
+            sample_A = [sample_A, a];
+            sample_B = [sample_B, b];
         end
     end
-    
-    sample_A(:, remove_idx) = [];
-    sample_B(:, remove_idx) = [];
     
     %%%%%%%%%%%%%%%%%% ICP %%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     pc_A = pointCloud(sample_A');
