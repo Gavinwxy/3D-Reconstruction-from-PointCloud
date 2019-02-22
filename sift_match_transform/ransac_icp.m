@@ -1,4 +1,4 @@
-function [model, pt_idx] = ransac(A, B, ransac_param)
+function [best_model, pt_idx] = ransac_icp(A, B, ransac_param)
 % Args:
 %   A, B: Point set A and B each with size m x n. m points with n
 %         dimensions. [x, y, z]' for example.
@@ -28,8 +28,8 @@ if match_num < sample_size
 end
 
 inl_th = round(match_num*inl_ratio);
-models = cell(1, itr_num);
-squared_errors = Inf(1, itr_num);
+best_inl_num = inl_th;
+best_model = [];
 
 for i=1:1:itr_num
     indexes = [1:match_num];
@@ -65,21 +65,18 @@ for i=1:1:itr_num
     
     dist = dist_cal(F*A_homo, B_homo);
     inl_num = length(find(dist<th_dist));
-    if inl_num < inl_th
+    if inl_num < best_inl_num
         continue;
     end
-    squared_errors(i) = sum(dist.^2);
-    models{i} = F;
+    best_model = F;
 end
 
-[err, idx] = min(squared_errors);
-if err == Inf
+if isempty(best_model)
     fprintf('Mo model meets success criteria !\n')
     return
 end
 
-model = models{idx};
-dist = dist_cal(model*A_homo, B_homo);
+dist = dist_cal(best_model*A_homo, B_homo);
 pt_idx = find(dist < th_dist);
 
 return
