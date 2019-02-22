@@ -1,5 +1,5 @@
-frame1 = 6;
-frame2 = 5;
+frame1 = 2;
+frame2 = 1;
 
 addpath('./sift_match_transform');
 pc = load('dataset/office1.mat');
@@ -17,9 +17,9 @@ rgb_img2 = imag2d(pc2.Color);
 
 % Hyper parameters
 sift_dist_th = 50;
-ratio_th = 0.5;
-ransac_param.sample_size = 20; % number of sample points to use
-ransac_param.th_dist = 1.7; % distance threshold
+ratio_th = 0.9;
+ransac_param.sample_size = 25; % number of sample points to use
+ransac_param.th_dist = 1.8; % distance threshold
 ransac_param.itr_num = 100; % number of iteration
 ransac_param.inl_ratio = 0.5;% inlier ratio
 

@@ -23,7 +23,7 @@ A_homo = [A; ones(1, match_num)];
 B_homo = [B; ones(1, match_num)];
 
 if match_num < sample_size
-    fprintf('Total pairs not enough !\n')
+    fprintf('Total pairs not enough in the first place !\n')
     return
 end
 
@@ -32,13 +32,37 @@ models = cell(1, itr_num);
 squared_errors = Inf(1, itr_num);
 
 for i=1:1:itr_num
-    sample_idx = rand_idx(match_num, sample_size); % return random index
+    indexes = [1:match_num];
+    
+    idx = randsample(indexes, 1);
+    indexes(find(indexes==idx)) = [];
+    
+    sample_A = A(:,idx);
+    sample_B = B(:,idx);
+    while size(sample_A, 2) < sample_size
+        if size(indexes, 2) == 0
+            fprintf('Total pairs not enough after removing repetitive pairs !\n')
+            return
+        end
+        idx = randsample(indexes, 1);
+        indexes(find(indexes==idx)) = [];
+        
+        a = A(:,idx);
+        b = B(:,idx);
+        sample_Ax = sample_A(1,:);
+        if ismember(a(1), sample_Ax) == 0
+            sample_A = [sample_A, a];
+            sample_B = [sample_B, b];
+        end
+    end
+    
     %%%%%%%%%%%%%%%%%% ICP %%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-    pc_A = pointCloud(A(:,sample_idx)');
-    pc_B = pointCloud(B(:,sample_idx)');
+    pc_A = pointCloud(sample_A');
+    pc_B = pointCloud(sample_B');
     F = pcregistericp(pc_B,pc_A,'Extrapolate',true);
     F = F.T;
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+    
     dist = dist_cal(F*A_homo, B_homo);
     inl_num = length(find(dist<th_dist));
     if inl_num < inl_th
