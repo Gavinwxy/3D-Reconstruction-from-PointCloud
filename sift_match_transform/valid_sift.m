@@ -1,4 +1,4 @@
-function sift_pairs = valid_sift(img1, mask1, img2, mask2, dist_th, ratio_th)
+function sift_pairs = valid_sift(img1, mask1, img2, mask2, dist_th, area_ratio_th, best_2nd_ratio)
 % This function is to filter and then find valid sift matches 
 % Args:
 %   img1, img2: RGB images
@@ -33,7 +33,7 @@ for i=1:1:pt_num1
     [h, w] = size(patch);
     ratio = sum(patch, 'all') / (h * w);
     
-    if ratio >= ratio_th
+    if ratio >= area_ratio_th
         if mask1(loc(1), loc(2)) == 1
             val_loc1 = [val_loc1, loc];
             val_d1 = [val_d1, d1(:,i)];
@@ -61,9 +61,9 @@ for i=1:1:pt_num2
     y_min = max(loc(2)-8, 1);
     y_max = min(loc(2)+8, 480);
     patch = mask2(x_min:x_max, y_min:y_max);
-    ratio = sum(patch, 'all') / ratio_th;
+    ratio = sum(patch, 'all') / area_ratio_th;
     
-    if ratio >= ratio_th
+    if ratio >= area_ratio_th
         if mask2(loc(1), loc(2)) == 1
             val_loc2 = [val_loc2, loc];
             val_d2 = [val_d2, d2(:,i)];
@@ -104,7 +104,16 @@ for i=1:1:num_val_sift1
     end
 end
 
-sift_pairs = clean_pairs(sift_pairs, distances);
-
+sift_pairs = clean_pairs(sift_pairs, distances, best_2nd_ratio);
 sift_pairs = sift_pairs';
+
+%{
+sift_pairs = second_best_check(sift_pairs, distances', 1.5);
+
+left_sift_pairs = sift_pairs(1,:);
+right_sift_pairs = sift_pairs(2,:);
+sift_pairs = [right_sift_pairs; left_sift_pairs];
+
+sift_pairs = second_best_check(sift_pairs, distances', 1.5);
+%}
 return
