@@ -11,7 +11,7 @@ max_frame = 40; % the last frame to be transformed
 % store up to 39 transformation matrices:
 models = cell(1,max_frame-1);
 
-% Calculate all necessary transformation matrices and store them in a cell
+% Calculate (max_frame-min_frame) many transformation matrices and store them in a cell
 for frame = max_frame:-1:(min_frame+1)
     frame1 = frame;
     frame2 = frame-1;
@@ -78,7 +78,7 @@ save('model_collection.mat', 'models');
 
 model_collection = load('model_collection.mat');
 models = model_collection.models;
-% store 40 transformed point clouds
+% store up to 40 transformed point clouds
 transformed_pcs = cell(1,max_frame);
 
 % Transform point clouds [min_frame+1, max_frame] toward min_frame
