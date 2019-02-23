@@ -7,7 +7,7 @@ mask_collection = load('mask_collection.mat');
 masks = mask_collection.masks;
 
 min_frame = 1;
-max_frame = 2;
+max_frame = 40; 
 models = cell(1,max_frame-1);
 
 for frame = max_frame:-1:(min_frame+1)
@@ -24,13 +24,45 @@ for frame = max_frame:-1:(min_frame+1)
     rgb_img2 = imag2d(pc2.Color);
     
     % Hyper parameters
-    sift_dist_th = 50; % the less the stricter
+    sift_dist_th = 60; % the less the stricter
     area_ratio_th = 0.9; % the more the stricter
-    best_2nd_ratio = 0.5; % the less the stricter
+    best_2nd_ratio = 0.7; % the less the stricter
     ransac_param.sample_size = 20; % the more the stricter
-    ransac_param.th_dist = 1; % the less the stricter
+    ransac_param.th_dist = 0.1; % the less the stricter
     ransac_param.itr_num = 100; % number of iteration
-    ransac_param.inl_ratio = 0.5;% the more the stricter
+    ransac_param.inl_ratio = 0.2; % the more the stricter
+    
+    % Difficult frames:
+    if frame == 23
+        sift_dist_th = 90;
+        best_2nd_ratio = 0.8;
+        ransac_param.sample_size = 3;
+    elseif frame == 25
+        sift_dist_th = 100;
+        best_2nd_ratio = 0.9;
+        ransac_param.sample_size = 3;
+        ransac_param.th_dist = 0.5;
+    elseif frame == 27
+        best_2nd_ratio = 0.95;
+        ransac_param.sample_size = 3;
+        ransac_param.th_dist = 0.5;
+        ransac_param.inl_ratio = 0.1;
+    elseif frame == 28
+        best_2nd_ratio = 0.8;
+        ransac_param.sample_size = 3;
+        ransac_param.th_dist = 0.5;
+        ransac_param.inl_ratio = 0.1;
+    elseif frame == 30
+        sift_dist_th = 70;
+    elseif frame == 31
+        sift_dist_th = 90;
+        ransac_param.th_dist = 0.3;
+    elseif frame == 32
+        sift_dist_th = 90;
+        best_2nd_ratio = 0.9;
+        ransac_param.th_dist = 0.2;
+        ransac_param.inl_ratio = 0.1;
+    end
 
     sift_pairs = valid_sift(rgb_img1, mask1, rgb_img2, mask2, sift_dist_th, area_ratio_th, best_2nd_ratio);
     [A, B] = get_depth(pc1, pc2, sift_pairs);
