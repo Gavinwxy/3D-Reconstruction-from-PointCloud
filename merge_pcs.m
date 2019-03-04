@@ -6,10 +6,12 @@ pcs = pcs.pcl_train;
 mask_collection = load('mask_collection.mat');
 masks = mask_collection.masks;
 
-min_frame = 1;
-max_frame = 40; 
+min_frame = 1; % transform all frames after min_frame to min_frame's coordinate system
+max_frame = 40; % the last frame to be transformed
+% store up to 39 transformation matrices:
 models = cell(1,max_frame-1);
 
+% Calculate (max_frame-min_frame) many transformation matrices and store them in a cell
 for frame = max_frame:-1:(min_frame+1)
     frame1 = frame;
     frame2 = frame-1;
@@ -76,10 +78,10 @@ save('model_collection.mat', 'models');
 
 model_collection = load('model_collection.mat');
 models = model_collection.models;
-
+% store up to 40 transformed point clouds
 transformed_pcs = cell(1,max_frame);
 
-
+% Transform point clouds [min_frame+1, max_frame] toward min_frame
 for frame = max_frame:-1:min_frame
     pc = pcs{frame};
     mask = masks{frame};
@@ -111,14 +113,8 @@ save('new_office.mat', 'transformed_pcs');
 new_office = load('new_office.mat');
 transformed_pcs = new_office.transformed_pcs;
 
+% Merge point clouds from min_frame to max_frame
 pc_merged = transformed_pcs{min_frame};
 for frame = (min_frame+1):max_frame
     pc_merged = pcmerge(pc_merged, transformed_pcs{frame}, 0.015);
 end
-
-xyz_pc = pc_merged.Location;
-color_pc = pc_merged.Color;
-z_pc = xyz_pc(:,3);
-idx = find(z_pc>4);
-xyz_pc(idx,:) = 0;
-pc_merged = pointCloud(xyz_pc, 'Color', color_pc);
