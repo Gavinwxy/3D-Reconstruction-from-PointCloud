@@ -115,4 +115,4 @@ idx_27 = cat(1, idx_27, idx_body, idx_legs);
 masks{27} = unique(idx_27);
 
 % Save masks to mat file:
-save('new_mask_collection.mat', 'masks');
+save('mask_collection.mat', 'masks');
