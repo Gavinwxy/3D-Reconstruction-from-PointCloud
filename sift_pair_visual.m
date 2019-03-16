@@ -6,7 +6,7 @@ pcs = pcs.pcl_train;
 mask_collection = load('mask_collection.mat');
 masks = mask_collection.masks;
 
-frame = 13; % frame from 2 to 40
+frame = 20; % frame from 2 to 40
 
 frame1 = frame;
 frame2 = frame-1;
@@ -70,46 +70,42 @@ color_pc1 = pc1.Color;
 color_pc2 = pc2.Color;
 
 valid_pairs = sift_pairs(:,pt_idx);
-
-for i = 1:size(valid_pairs, 2)
-    color_pc1(sift_pairs(1,i), :) = [0, 255, 0];
-    color_pc2(sift_pairs(2,i), :) = [0, 255, 0];
+valid_pairs_left = valid_pairs(1, :)';
+v_left_coord = [];
+for i=1:1:size(valid_pairs_left, 1)
+    [x,y] = idx_convert_1d_to_2d(valid_pairs_left(i));
+    v_left_coord = [v_left_coord; [x, y]];
 end
+
+
+valid_pairs_right = valid_pairs(2, :)';
+v_right_coord = [];
+for i=1:1:size(valid_pairs_right, 1)
+    [x,y] = idx_convert_1d_to_2d(valid_pairs_right(i));
+    v_right_coord = [v_right_coord; [x, y]];
+end
+
+figure; ax = axes;
+showMatchedFeatures(rgb_img1,rgb_img2,v_left_coord,v_right_coord,'montage','Parent',ax);
+
 
 invalid_pairs = sift_pairs;
 invalid_pairs(:,pt_idx) = [];
 
-for i = 1:size(invalid_pairs, 2)
-    color_pc1(invalid_pairs(1,i), :) = [255, 0, 0];
-    color_pc2(invalid_pairs(2,i), :) = [255, 0, 0];
+invalid_pairs_left = invalid_pairs(1, :)';
+inv_left_coord = [];
+for i=1:1:size(invalid_pairs_left, 1)
+    [x,y] = idx_convert_1d_to_2d(invalid_pairs_left(i));
+    inv_left_coord = [inv_left_coord; [x, y]];
 end
 
-figure(1);
-imshow(imag2d(color_pc1))
-figure(2);
-imshow(imag2d(color_pc2))
 
-% Merge two point clouds
-mask1 = masks{frame1};
-mask2 = masks{frame2};
+invalid_pairs_right = invalid_pairs(2, :)';
+inv_right_coord = [];
+for i=1:1:size(invalid_pairs_right, 1)
+    [x,y] = idx_convert_1d_to_2d(invalid_pairs_right(i));
+    inv_right_coord = [inv_right_coord; [x, y]];
+end
 
-loc_pc1 = pc1.Location;
-loc_pc1(mask1,:) = [];
-loc_pc2 = pc2.Location;
-loc_pc2(mask2,:) = [];
-
-color_pc1 = pc1.Color;
-color_pc1(mask1,:) = [];
-color_pc2 = pc2.Color;
-color_pc2(mask2,:) = [];
-
-loc_pc1 = cat(2, loc_pc1, ones(size(loc_pc1, 1), 1));
-loc_pc1 = (model*loc_pc1')';
-loc_pc1 = loc_pc1(:,1:3);
-
-loc_pc = cat(1, loc_pc1, loc_pc2);
-color_pc = cat(1, color_pc1, color_pc2);
-
-pc = pointCloud(loc_pc, 'Color', color_pc);
-figure(3);
-pcshow(pc)
+figure; ax = axes;
+showMatchedFeatures(rgb_img1,rgb_img2,inv_left_coord,inv_right_coord,'montage','Parent',ax);
