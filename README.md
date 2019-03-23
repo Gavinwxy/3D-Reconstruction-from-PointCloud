@@ -1,5 +1,5 @@
 # 3D-Reconstruction-from-PointCloud
-Noise remove and image fusing on Point Cloud data 
+Noise removal and image fusing on Point Cloud data 
 
 ## Issue
 
