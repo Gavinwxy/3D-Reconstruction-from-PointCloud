@@ -30,6 +30,7 @@ ransac_param.th_dist = 0.1; % the less the stricter
 ransac_param.itr_num = 100; % number of iteration
 ransac_param.inl_ratio = 0.2; % the more the stricter
 
+%{
 % Difficult frames:
 if frame == 23
     sift_dist_th = 90;
@@ -61,14 +62,13 @@ elseif frame == 32
     ransac_param.th_dist = 0.2;
     ransac_param.inl_ratio = 0.1;
 end
+%}
 
 sift_pairs = valid_sift(rgb_img1, mask1, rgb_img2, mask2, sift_dist_th, area_ratio_th, best_2nd_ratio);
 [A, B] = get_depth(pc1, pc2, sift_pairs);
 [model, pt_idx] = ransac_icp(A, B, ransac_param);
 
-% Display matched and mismatched points in images
-color_pc1 = pc1.Color;
-color_pc2 = pc2.Color;
+% Display matched and mismatched points in images:
 
 valid_pairs = sift_pairs(:,pt_idx);
 valid_pairs_left = valid_pairs(1, :)';
@@ -78,7 +78,6 @@ for i=1:1:size(valid_pairs_left, 1)
     v_left_coord = [v_left_coord; [x, y]];
 end
 
-
 valid_pairs_right = valid_pairs(2, :)';
 v_right_coord = [];
 for i=1:1:size(valid_pairs_right, 1)
@@ -87,7 +86,7 @@ for i=1:1:size(valid_pairs_right, 1)
 end
 
 figure; ax = axes;
-showMatchedFeatures(rgb_img1,rgb_img2,v_left_coord,v_right_coord,'montage','Parent',ax);
+showMatchedFeatures(rgb_img2,rgb_img1,v_right_coord,v_left_coord,'montage','Parent',ax);
 
 
 invalid_pairs = sift_pairs;
@@ -100,7 +99,6 @@ for i=1:1:size(invalid_pairs_left, 1)
     inv_left_coord = [inv_left_coord; [x, y]];
 end
 
-
 invalid_pairs_right = invalid_pairs(2, :)';
 inv_right_coord = [];
 for i=1:1:size(invalid_pairs_right, 1)
@@ -109,4 +107,14 @@ for i=1:1:size(invalid_pairs_right, 1)
 end
 
 figure; ax = axes;
-showMatchedFeatures(rgb_img1,rgb_img2,inv_left_coord,inv_right_coord,'montage','Parent',ax);
+showMatchedFeatures(rgb_img2,rgb_img1,inv_right_coord,inv_left_coord,'montage','Parent',ax);
+
+
+sift_left_coord = [v_left_coord; inv_left_coord];
+figure(3);
+imshow(rgb_img1);
+hold on;
+for i =1:size(sift_left_coord, 1)
+    p = sift_left_coord(i,:);
+    plot(p(1), p(2), 'r*', 'LineWidth', 2, 'MarkerSize', 5);
+end
