@@ -7,7 +7,7 @@ pcs = pcs.pcl_train;
 mask_collection = load('results/mask_collection.mat');
 masks = mask_collection.masks;
 
-frame = 20; % frame from 2 to 40
+frame = 20; % frame >= 2
 
 frame1 = frame;
 frame2 = frame-1;
@@ -108,5 +108,5 @@ for i=1:1:size(invalid_pairs_right, 1)
     inv_right_coord = [inv_right_coord; [x, y]];
 end
 
-%figure; ax = axes;
-%showMatchedFeatures(rgb_img1,rgb_img2,inv_left_coord,inv_right_coord,'montage','Parent',ax);
+figure; ax = axes;
+showMatchedFeatures(rgb_img1,rgb_img2,inv_left_coord,inv_right_coord,'montage','Parent',ax);

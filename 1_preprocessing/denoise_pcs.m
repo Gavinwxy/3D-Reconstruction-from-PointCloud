@@ -8,16 +8,6 @@ Y = 480;
 idx_upper = [];
 idx_lower = [];
 
-%{
-for i = 1:480
-    idx_upper = [idx_upper; 1 + (i-1)*640];
-    idx_lower = [idx_lower; 640 + (i-1)*640];
-end
-idx_left = [2:639]';
-idx_right = [306562:307199]';
-idx = cat(1, idx_upper, idx_lower, idx_left, idx_right);
-%}
-
 for i = 1:Y
     idx_upper = [idx_upper; 1 + (i-1)*X];
     idx_lower = [idx_lower; X + (i-1)*X];
@@ -45,21 +35,21 @@ for i = 1:size(pcs, 2)
     % Remove flying points:
     radius = 0.3;
     min_neighbors = 6000;
-    %MdlES = ExhaustiveSearcher(xyzpc);
     MdlKDT = KDTreeSearcher(xyzpc);
     
     idx5 = [];
     for j = 1:size(xyzpc, 1)
         Y = xyzpc(j,:);
         
-        %IdxES = rangesearch(MdlES,Y,radius);
         IdxKDT = rangesearch(MdlKDT,Y,radius);
         
-        %if size(IdxES{1}, 2) < min_neighbors
         if size(IdxKDT{1}, 2) < min_neighbors
             idx5 = [idx5; j];
         end
     end
+    
+    % Remove flying points fastly:
+    idx5 = remove_flying_pixels(xyzpc, 0.15, 100, X);
 
     idx_final = cat(1, idx, idx1, idx2, idx3, idx4, idx5);
     masks{i} = unique(idx_final);
