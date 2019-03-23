@@ -13,7 +13,7 @@ addpath('./utils');
 %% Load trainig data
 office = load('dataset/office1.mat');
 pcs = office.pcl_train;
-pcs(20:end) = [];
+pcs(23:end) = [];
 
 %% Preprocessing data
 
@@ -125,7 +125,7 @@ masks{27} = unique(idx_27);
 %}
 
 % Save masks to mat file:
-save('mask_collection.mat', 'masks');
+save('results/mask_collection.mat', 'masks');
 
 %% Estimate transformations  
 mask_collection = load('results/mask_collection.mat');
